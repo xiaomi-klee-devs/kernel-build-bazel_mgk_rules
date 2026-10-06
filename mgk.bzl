@@ -219,10 +219,11 @@ def define_mgk(
                     "dtbs",
                 ],
                 strip_modules=True,
-                outs = DEFAULT_GKI_OUTS,
+                outs = DEFAULT_GKI_OUTS + ["certs/signing_key.x509"],
                 module_outs = common_eng_modules if ack_build == "eng" else common_userdebug_modules if ack_build == "userdebug" else common_user_modules if ack_build == "user" else [],
                 module_implicit_outs = common_modules if ack_build == "ack" else [],
                 base_kernel = None,
+                module_signing_key = "//kernel_device_modules-6.6:certs/mtk_signing_key.pem",
                 trim_nonlisted_kmi = False,
             )
         if True:
@@ -254,7 +255,7 @@ def define_mgk(
                     "//build/bazel_mgk_rules:kernel_version_mainline": "//{}-{}:kernel_aarch64_debug".format(ack_dir, "mainline"),
                     "//conditions:default"                           : None,
                 }) if build == "ack" else ":{}_kernel_aarch64.{}".format(name, build),
-                module_signing_key = "certs/mtk_signing_key.pem",
+                module_signing_key = "//kernel_device_modules-6.6:certs/mtk_signing_key.pem",
                 modules_prepare_force_generate_headers = True,
                 dtstree = select({
                     "//build/bazel_mgk_rules:kernel_version_6.1"     : "//kernel_device_modules-{}/arch/arm64/boot/dts:mtk_dt".format("6.1"),
