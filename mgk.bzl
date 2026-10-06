@@ -503,7 +503,7 @@ DEVCIE_MODULES_INCLUDE="-I\\$(DEVICE_MODULES_PATH)/include"
     content.append("DEFCONFIG={}".format(ctx.attr.defconfig))
 
     content.append("PRE_DEFCONFIG_CMDS=\"mkdir -p \\${OUT_DIR}/arch/arm64/configs/ && KCONFIG_CONFIG=\\${OUT_DIR}/arch/arm64/configs/${DEFCONFIG} ${ROOT_DIR}/${KERNEL_DIR}/scripts/kconfig/merge_config.sh -m -r " + " ".join(defconfig) + "\"")
-    content.append("POST_DEFCONFIG_CMDS=\"\"")
+    content.append("POST_DEFCONFIG_CMDS=\"mkdir -p \\${OUT_DIR}/certs && cp ${ROOT_DIR}/${DEVICE_MODULES_DIR}/kernel/configs/mtk_signing_key.x509 \\${OUT_DIR}/certs/signing_key.x509\"")
     content.append("")
     content.extend(ext_content)
     content.append("")
