@@ -250,9 +250,10 @@ def define_mgk(
                 }),
                 build_config = ":kernel_aarch64_{}_build_config.{}".format(name, build),
                 kconfig_ext = ":Kconfig.ext",
-                outs = DEFAULT_GKI_OUTS,
+                outs = DEFAULT_GKI_OUTS + ["certs/signing_key.x509"],
                 module_outs = common_eng_modules if build == "eng" else common_userdebug_modules if build == "userdebug" else common_user_modules,
                 base_kernel = None,
+                module_signing_key = "//kernel_device_modules-6.6:certs/mtk_signing_key.pem",
                 trim_nonlisted_kmi = False,
             )
             kernel_build(
@@ -273,7 +274,7 @@ def define_mgk(
                 kconfig_ext = "Kconfig.ext",
                 strip_modules = False,
                 base_kernel = ":{}_kernel_aarch64.{}".format(name, build),
-                module_signing_key = "certs/mtk_signing_key.pem",
+                module_signing_key = "//kernel_device_modules-6.6:certs/mtk_signing_key.pem",
                 modules_prepare_force_generate_headers = True,
                 # ABI
                 kmi_symbol_list = symbol_list,
