@@ -106,6 +106,7 @@ def define_mgk(
         platform_device_user_modules,
         symbol_list,
         dtb_files = None):
+    dtb_files = dtb_files or []
     mgk_defconfig_overlays = []
     for o in DEFCONFIG_OVERLAYS.split(" "):
         if o != "":
@@ -245,8 +246,7 @@ def define_mgk(
                 kconfig_ext = ":Kconfig.ext",
                 make_goals = [
                     "modules",
-                    "dtbs",
-                ],
+                ] + (["dtbs"] if dtb_files else []),
                 strip_modules = False,
                 base_kernel = select({
                     "//build/bazel_mgk_rules:kernel_version_6.1"     : "//{}-{}:kernel_aarch64_debug".format(ack_dir, "6.1"),
@@ -261,7 +261,7 @@ def define_mgk(
                     "//build/bazel_mgk_rules:kernel_version_6.6"     : "//kernel_device_modules-{}/arch/arm64/boot/dts:mtk_dt".format("6.6"),
                     "//build/bazel_mgk_rules:kernel_version_mainline": "//kernel_device_modules-{}/arch/arm64/boot/dts:mtk_dt".format("mainline"),
                     "//conditions:default"                           : "//kernel_device_modules/arch/arm64/boot/dts:mtk_dt",
-                }),
+                }) if dtb_files else None,
                 # ABI
                 kmi_symbol_list = symbol_list,
                 trim_nonlisted_kmi = False,
@@ -486,10 +486,7 @@ def _mgk_build_config_impl(ctx):
     content = []
     content.append("DEVICE_MODULES_DIR={}".format(ctx.attr.device_modules_dir))
     content.append("KERNEL_DIR={}".format(ctx.attr.kernel_dir))
-    if ctx.attr.config_is_local[BuildSettingInfo].value:
-        content.append("DEVICE_MODULES_REL_DIR=../kernel/${DEVICE_MODULES_DIR}")
-    else:
-        content.append("DEVICE_MODULES_REL_DIR=$(realpath ${DEVICE_MODULES_DIR} --relative-to ${KERNEL_DIR})")
+    content.append("DEVICE_MODULES_REL_DIR=$(realpath ${DEVICE_MODULES_DIR} --relative-to ${KERNEL_DIR})")
     content.append("""
 . ${ROOT_DIR}/${KERNEL_DIR}/build.config.common
 . ${ROOT_DIR}/${KERNEL_DIR}/build.config.aarch64
